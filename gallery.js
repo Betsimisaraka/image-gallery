@@ -20,7 +20,6 @@ function Gallery(gallery) {
         modal.addEventListener('click', handleClickOutside);
         nextButton.addEventListener('click', showNextImage);
         prevButton.addEventListener('click', showPrevImage);
-        window.addEventListener('keydown', handleKey);
     }
 
     function closeModal() {
@@ -30,23 +29,14 @@ function Gallery(gallery) {
         nextButton.removeEventListener('click', showNextImage);
         modal.removeEventListener('click', handleClickOutside);
         prevButton.removeEventListener('click', showPrevImage);
-        window.removeEventListener('keydown', handleKey);
     }
 
     function showNextImage() {
-        showImage(currentImage.nextElementSibling);
+        showImage(currentImage.nextElementSibling || gallery.firstElementChild);
     }
 
     function showPrevImage() {
-        showImage(currentImage.previousElementSibling);
-    }
-
-    function handleKey(e) {
-        if (e.key === 'ArrowRight') {
-            showNextImage();
-        } if (e.key === 'ArrowLeft') {
-            showPrevImage();
-        }
+        showImage(currentImage.previousElementSibling || gallery.lastElementChild);
     }
 
     function handleClickOutside(e) {
@@ -56,9 +46,9 @@ function Gallery(gallery) {
     }
 
     function handleKeyUp(e) {
-        if (e.key === 'Escape') {
-            closeModal();
-        }
+        if (e.key === 'Escape') return closeModal();
+        if (e.key === 'ArrowRight') return showNextImage();
+        if (e.key === 'ArrowLeft') return showPrevImage();
     }
 
     function showImage(el) {
@@ -75,11 +65,20 @@ function Gallery(gallery) {
     }
     //Update the modal with this info
     images.forEach(image => {
-        image.addEventListener('click', e => showImage(e.currentTarget))
+        image.addEventListener('click', e => showImage(e.currentTarget));
+    });
+
+    images.forEach(image => {
+        image.addEventListener('keyup', e => {
+            if (e.key === 'Enter') {
+                showImage(e.currentTarget);
+            }
+        });
     });
 }
 
 const gallery1 = Gallery(document.querySelector('.gallery1'));
 const gallery2 = Gallery(document.querySelector('.gallery2'));
+const gallery3 = Gallery(document.querySelector('.gallery3'));
 
 
